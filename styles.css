@@ -5,11 +5,11 @@
 
 :root {
     /* Crystal Base */
-    --bg-deep: #f0edf4;
-    --bg-main: #f7f4fa;
-    --bg-card: #ffffff;
-    --bg-elevated: #ece7f2;
-    --bg-surface: #e3dded;
+    --bg-deep: #1a1428;
+    --bg-main: #1e1830;
+    --bg-card: #28203d;
+    --bg-elevated: #332a4d;
+    --bg-surface: #3d335a;
 
     /* Clear Quartz Crystal Palette (luminous for light) */
     --jade-deep: #6b5b8a;
@@ -22,15 +22,15 @@
     --jade-whisper: #f0ebf6;
 
     /* Text */
-    --text-primary: #2d2440;
-    --text-secondary: #6b5b8a;
+    --text-primary: #e8e0f0;
+    --text-secondary: #c5b3e6;
     --text-muted: #9389a8;
-    --text-faint: #c4bbd4;
+    --text-faint: #6b5b8a;
 
     /* Crystal Accents — Amethyst & Rose Quartz */
-    --cream: #f7f4fa;
-    --cream-dark: #f0edf4;
-    --parchment: #ece7f2;
+    --cream: #312840;
+    --cream-dark: #2a2235;
+    --parchment: #4a3d62;
     --honey: #d4a574;
     --honey-light: #e0bc94;
     --rose: #d4708f;
@@ -57,11 +57,11 @@
     --radius-md: 10px;
     --radius-lg: 14px;
     --radius-xl: 20px;
-    --shadow-soft: 0 2px 12px rgba(100, 80, 140, 0.08);
-    --shadow-medium: 0 4px 20px rgba(100, 80, 140, 0.12);
-    --shadow-lifted: 0 8px 32px rgba(100, 80, 140, 0.15);
-    --border-subtle: 1px solid rgba(155, 126, 200, 0.15);
-    --border-medium: 1px solid rgba(155, 126, 200, 0.25);
+    --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.25);
+    --shadow-medium: 0 4px 20px rgba(0, 0, 0, 0.35);
+    --shadow-lifted: 0 8px 32px rgba(0, 0, 0, 0.4);
+    --border-subtle: 1px solid rgba(155, 126, 200, 0.12);
+    --border-medium: 1px solid rgba(155, 126, 200, 0.2);
 
     /* Layout */
     --safe-top: env(safe-area-inset-top, 0px);
@@ -70,7 +70,7 @@
 }
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html { height: 100%; overflow: hidden; background: #f0edf4; }
+html { height: 100%; overflow: hidden; background: #1a1428; }
 
 body {
     font-family: var(--font-body);
@@ -88,10 +88,10 @@ body::before {
     position: fixed;
     inset: 0;
     background: url('quartz-texture.png') center/cover no-repeat;
-    opacity: 0.12;
+    opacity: 0.1;
     pointer-events: none;
     z-index: 0;
-    filter: brightness(1.1) saturate(0.7);
+    filter: brightness(0.4) saturate(0.5);
 }
 
 body::after {
@@ -121,8 +121,8 @@ body::after {
     position: absolute;
     inset: 0;
     background: url('quartz-texture.png') center/cover no-repeat;
-    opacity: 0.12;
-    filter: brightness(1.1) saturate(0.7);
+    opacity: 0.1;
+    filter: brightness(0.4) saturate(0.5);
 }
 
 .auth-container {
@@ -136,10 +136,10 @@ body::after {
 
 .auth-logo {
     font-family: var(--font-display);
-    font-size: 48px;
-    font-weight: 500;
-    letter-spacing: 10px;
-    color: var(--jade-dark);
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: 5px;
+    color: var(--jade-medium);
     text-transform: uppercase;
     margin-bottom: 4px;
 }
@@ -217,9 +217,9 @@ body::after {
 
 .app-title {
     font-family: var(--font-display);
-    font-size: 28px;
-    font-weight: 500;
-    letter-spacing: 6px;
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: 4px;
     color: var(--jade-dark);
     text-transform: uppercase;
     position: relative;
@@ -279,8 +279,8 @@ body::after {
 
 /* ═══════ AFFIRMATION BANNER ═══════ */
 .affirmation-banner {
-    background: linear-gradient(135deg, var(--bg-elevated), var(--jade-pale));
-    color: var(--text-primary);
+    background: linear-gradient(135deg, #6b4d9e, #4a3470);
+    color: #ffffff;
     border-radius: var(--radius-lg);
     padding: var(--space-lg);
     margin-bottom: var(--space-lg);
@@ -296,7 +296,7 @@ body::after {
     position: absolute;
     inset: 0;
     background:
-        radial-gradient(circle at 20% 80%, rgba(90, 158, 122, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 20% 80%, rgba(155, 126, 200, 0.1) 0%, transparent 50%),
         radial-gradient(circle at 80% 20%, rgba(155, 126, 200, 0.06) 0%, transparent 50%);
 }
 
@@ -308,7 +308,7 @@ body::after {
     line-height: 1.6;
     position: relative;
     z-index: 1;
-    color: var(--jade-dark);
+    color: #ffffff;
 }
 
 .affirmation-banner .source {
@@ -487,7 +487,7 @@ body::after {
 }
 
 .alignment-chart-bar.today {
-    box-shadow: 0 0 8px rgba(90, 158, 122, 0.3);
+    box-shadow: 0 0 8px rgba(155, 126, 200, 0.3);
 }
 
 .alignment-chart-label {
@@ -534,7 +534,7 @@ body::after {
 .feature-card:active {
     transform: translateY(-2px);
     box-shadow: var(--shadow-medium);
-    border-color: rgba(90, 158, 122, 0.25);
+    border-color: rgba(155, 126, 200, 0.25);
 }
 
 .feature-card:hover::before,
@@ -616,7 +616,7 @@ body::after {
     transition: all 0.2s;
 }
 
-.journal-entry-card:hover { box-shadow: var(--shadow-soft); border-color: rgba(90, 158, 122, 0.2); }
+.journal-entry-card:hover { box-shadow: var(--shadow-soft); border-color: rgba(155, 126, 200, 0.2); }
 
 .journal-entry-date { font-family: var(--font-mono); font-weight: 300; font-size: 12px; color: var(--text-muted); margin-bottom: var(--space-xs); letter-spacing: 0.5px; }
 .journal-entry-title { font-family: var(--font-display); font-size: 19px; font-weight: 500; color: var(--text-primary); margin-bottom: var(--space-xs); }
@@ -1080,7 +1080,7 @@ body::after {
 }
 
 .char-card:active { transform: scale(0.97); }
-.char-card:hover { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35); border-color: rgba(90, 158, 122, 0.25); }
+.char-card:hover { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35); border-color: rgba(155, 126, 200, 0.25); }
 
 .char-card-img {
     position: relative;
@@ -1521,7 +1521,7 @@ body::after {
 
 .space-album-card:hover {
     box-shadow: var(--shadow-soft);
-    border-color: rgba(90, 158, 122, 0.2);
+    border-color: rgba(155, 126, 200, 0.25);
 }
 
 .space-album-cover {
@@ -2014,7 +2014,7 @@ body::after {
     transition: all 0.2s;
 }
 
-.anchor-card:hover { border-color: rgba(90, 158, 122, 0.2); }
+.anchor-card:hover { border-color: rgba(155, 126, 200, 0.2); }
 
 .anchor-card-header {
     display: flex;
@@ -2363,7 +2363,7 @@ body.mini-player-active .content-area {
     transition: all 0.2s;
 }
 
-.scene-card:hover { box-shadow: var(--shadow-soft); border-color: rgba(90, 158, 122, 0.2); }
+.scene-card:hover { box-shadow: var(--shadow-soft); border-color: rgba(155, 126, 200, 0.2); }
 
 .scene-card-image {
     width: 100%;
@@ -2595,7 +2595,7 @@ body.mini-player-active .content-area {
     height: 10px;
     border-radius: 50%;
     background: var(--jade-primary);
-    box-shadow: 0 0 8px rgba(90, 158, 122, 0.4);
+    box-shadow: 0 0 8px rgba(155, 126, 200, 0.4);
 }
 
 .timeline-card {
@@ -2609,7 +2609,7 @@ body.mini-player-active .content-area {
     transition: all 0.2s;
 }
 
-.timeline-card:hover { box-shadow: var(--shadow-soft); border-color: rgba(90, 158, 122, 0.2); }
+.timeline-card:hover { box-shadow: var(--shadow-soft); border-color: rgba(155, 126, 200, 0.2); }
 
 .timeline-card::before {
     content: '';
