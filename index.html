@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#f0edf4">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Clear Quartz</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Hubballi&family=Quicksand:wght@300;400;500;600&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- AUTH SCREEN -->
+    <div id="authScreen">
+        <div class="auth-container">
+            <h1 class="auth-logo">Clear Quartz</h1>
+            <p class="auth-tagline">clarity lives here</p>
+            <div class="auth-form" id="authForm">
+                <input class="auth-input" type="email" id="authEmail" placeholder="Email" autocomplete="email">
+                <input class="auth-input" type="password" id="authPassword" placeholder="Password" autocomplete="current-password">
+                <input class="auth-input" type="text" id="authDisplayName" placeholder="Your name in Clear Quartz" style="display:none">
+                <button class="auth-btn" id="authSubmit">Enter Clear Quartz</button>
+                <div class="auth-error" id="authError"></div>
+                <div class="auth-toggle">
+                    <span id="authToggleText">First time?</span> <a id="authToggleLink">Create account</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="app" style="display:none">
+        <div class="content-area-wrapper">
+        <header class="app-header">
+            <h1 class="app-title">Clear Quartz</h1>
+            <p class="app-subtitle" id="appSubtitle">clarity lives here</p>
+        </header>
+
+        <main class="content-area" id="contentArea">
+            <!-- HOME -->
+            <div class="page active" id="page-home">
+                <div class="affirmation-banner" id="affirmationBanner">
+                    <button class="affirmation-edit-btn" id="affirmationEditBtn" title="Edit affirmations">&#9998;</button>
+                    <p id="affirmationText">&ldquo;I don&rsquo;t hope for Clear Quartz. I don&rsquo;t wish for it. I live it &mdash; it is simply where I am.&rdquo;</p>
+                </div>
+
+                <div class="modal-overlay" id="affirmationModal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Your Affirmations</h3>
+                            <button class="modal-close" id="affirmationModalClose">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="modal-description">These are the words that anchor you. Tap to cycle through them on the home screen.</p>
+                            <div id="affirmationList"></div>
+                            <div class="affirmation-add">
+                                <textarea class="affirmation-input" id="newAffirmation" placeholder="Write a new affirmation..." rows="2"></textarea>
+                                <button class="btn-primary btn-sm" id="addAffirmationBtn">Add</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alignment-widget">
+                    <div class="alignment-widget-header">
+                        <h3>Today&rsquo;s Alignment</h3>
+                        <span>How natural does Clear Quartz feel?</span>
+                    </div>
+                    <div class="alignment-scale" id="alignmentScale">
+                        <button class="alignment-dot" data-level="1"></button>
+                        <button class="alignment-dot" data-level="2"></button>
+                        <button class="alignment-dot" data-level="3"></button>
+                        <button class="alignment-dot" data-level="4"></button>
+                        <button class="alignment-dot" data-level="5"></button>
+                        <button class="alignment-dot" data-level="6"></button>
+                        <button class="alignment-dot" data-level="7"></button>
+                    </div>
+                    <div class="alignment-labels"><span>drifting</span><span>home</span></div>
+                    <div class="alignment-history" id="alignmentHistory">
+                        <div class="alignment-history-header">
+                            <span class="alignment-history-title">This Week</span>
+                            <button class="alignment-history-toggle" id="alignmentHistoryToggle">show</button>
+                        </div>
+                        <div class="alignment-chart" id="alignmentChart" style="display:none"></div>
+                    </div>
+                </div>
+
+                <div class="feature-grid">
+                    <a class="feature-card" data-page="world"><span class="feature-card-icon">🌏</span><div class="feature-card-title">The World</div><div class="feature-card-desc">Places around the world in Clear Quartz</div></a>
+                    <a class="feature-card" data-page="personas" data-accent="rose"><span class="feature-card-icon">🧘🏽‍♀️</span><div class="feature-card-title">Personas</div><div class="feature-card-desc">Who we are in Clear Quartz</div></a>
+                    <a class="feature-card" data-page="connections" data-accent="lavender"><span class="feature-card-icon">🔗</span><div class="feature-card-title">Connections</div><div class="feature-card-desc">People in our lives</div></a>
+                    <a class="feature-card" data-page="space" data-accent="honey"><span class="feature-card-icon">🎞</span><div class="feature-card-title">Life</div><div class="feature-card-desc">Photo albums of life in Clear Quartz</div></a>
+                    <a class="feature-card" data-page="journal"><span class="feature-card-icon">🔖</span><div class="feature-card-title">Journal</div><div class="feature-card-desc">Entries from within Clear Quartz</div></a>
+                    <a class="feature-card" data-page="messenger" data-accent="sky"><span class="feature-card-icon">&#128172;</span><div class="feature-card-title">Messenger</div><div class="feature-card-desc">Our messages in Clear Quartz</div></a>
+                    <a class="feature-card" data-page="gallery" data-accent="honey"><span class="feature-card-icon">🎬</span><div class="feature-card-title">Scene Builder</div><div class="feature-card-desc">Memories of special moments</div></a>
+                    <a class="feature-card" data-page="timeline" data-accent="lavender"><span class="feature-card-icon">⏳</span><div class="feature-card-title">Timeline</div><div class="feature-card-desc">The story of our lives in Clear Quartz</div></a>
+                    <a class="feature-card full-width" data-page="anchors" data-accent="rose"><span class="feature-card-icon">🔮</span><div class="feature-card-title">Sensory Anchors</div><div class="feature-card-desc">Everything that grounds us in Clear Quartz</div></a>
+                </div>
+                <div class="botanical-accent">&#10086; &#10086; &#10086;</div>
+            </div>
+
+            <!-- WORLD -->
+            <div class="page" id="page-world">
+                <div class="section-header">
+                    <button class="back-btn" onclick="worldBack()">&larr;</button>
+                    <h2 id="worldTitle">The World</h2>
+                    <button class="section-action-btn" id="worldNewBtn" onclick="worldNew()">+</button>
+                </div>
+
+                <!-- FILTER TABS -->
+                <div class="connections-filters" id="worldFilters">
+                    <button class="connections-filter active" data-filter="all" onclick="filterWorld('all')">All</button>
+                    <button class="connections-filter" data-filter="home" onclick="filterWorld('home')">Home</button>
+                    <button class="connections-filter" data-filter="city" onclick="filterWorld('city')">City</button>
+                    <button class="connections-filter" data-filter="work" onclick="filterWorld('work')">Work</button>
+                    <button class="connections-filter" data-filter="daily spots" onclick="filterWorld('daily spots')">Daily Spots</button>
+                    <button class="connections-filter" data-filter="shop" onclick="filterWorld('shop')">Shop</button>
+                    <button class="connections-filter" data-filter="special" onclick="filterWorld('special')">Special</button>
+                </div>
+
+                <div id="worldList" class="personas-list"></div>
+
+                <div id="worldDetail" class="persona-detail" style="display:none">
+                    <div class="detail-hero-image">
+                        <img id="worldDetailHeroImg" src="" style="display:none">
+                        <div id="worldDetailHeroPlaceholder" class="detail-hero-placeholder" style="display:none">
+                            <span id="worldDetailHeroIcon">&#127807;</span>
+                        </div>
+                        <div class="detail-hero-overlay">
+                            <h2 class="detail-hero-name" id="worldDetailName"></h2>
+                            <div id="worldDetailTag" class="connection-tag" style="display:none"></div>
+                        </div>
+                    </div>
+                    <div class="detail-actions-row">
+                        <button class="btn-secondary btn-sm" onclick="worldEdit()">Edit</button>
+                        <button class="btn-danger btn-sm" onclick="worldDelete()">Delete</button>
+                    </div>
+                    <div id="worldDetailFields" class="persona-detail-fields"></div>
+                </div>
+
+                <div id="worldEditor" class="persona-editor" style="display:none">
+                    <div class="world-editor-photo-row">
+                        <div class="world-editor-photo" id="worldEditorPhoto">
+                            <img id="worldEditorPhotoImg" src="" style="display:none">
+                            <span id="worldEditorPhotoIcon">&#127807;</span>
+                        </div>
+                        <div>
+                            <label class="btn-secondary btn-sm" for="worldPhotoUpload">Upload Photo</label>
+                            <input type="file" id="worldPhotoUpload" accept="image/*" style="display:none">
+                            <div class="anchor-card-meta" style="margin-top:4px">A place in Clear Quartz</div>
+                        </div>
+                    </div>
+                    <input class="auth-input persona-field-input" id="worldEdName" placeholder="Name of this place">
+                    <div class="connection-type-picker">
+                        <span class="connection-type-label">What kind of place?</span>
+                        <div class="connection-type-options" id="worldTypeOptions">
+                            <button class="connection-type-btn" data-type="home" onclick="pickWorldType('home')">&#127968; Home</button>
+                            <button class="connection-type-btn" data-type="city" onclick="pickWorldType('city')">&#127750; City</button>
+                            <button class="connection-type-btn" data-type="work" onclick="pickWorldType('work')">&#128188; Work</button>
+                            <button class="connection-type-btn" data-type="daily spots" onclick="pickWorldType('daily spots')">&#9749; Daily Spots</button>
+                            <button class="connection-type-btn" data-type="shop" onclick="pickWorldType('shop')">&#128722; Shop</button>
+                            <button class="connection-type-btn" data-type="special" onclick="pickWorldType('special')">&#10024; Special</button>
+                        </div>
+                    </div>
+                    <textarea class="auth-input persona-field-input" id="worldEdDescription" placeholder="Describe this place &mdash; what does it look like? What&rsquo;s the feel?" rows="4"></textarea>
+                    <textarea class="auth-input persona-field-input" id="worldEdAtmosphere" placeholder="Atmosphere &mdash; the light, the sounds, the mood when you&rsquo;re here" rows="3"></textarea>
+                    <textarea class="auth-input persona-field-input" id="worldEdSensory" placeholder="Sensory details &mdash; what do you smell, taste, feel on your skin?" rows="3"></textarea>
+                    <textarea class="auth-input persona-field-input" id="worldEdMemories" placeholder="Memories &mdash; what has happened here? What moments live in this place?" rows="3"></textarea>
+                    <textarea class="auth-input persona-field-input" id="worldEdSeasons" placeholder="Seasons &mdash; how does this place change through the year?" rows="3"></textarea>
+                    <textarea class="auth-input persona-field-input" id="worldEdLore" placeholder="Lore &mdash; any history, legends, or secrets about this place?" rows="3"></textarea>
+                    <div class="persona-extras-section">
+                        <div class="persona-extras-header">
+                            <span class="anchor-card-title" style="font-size:16px">Extras</span>
+                            <button class="btn-secondary btn-sm" onclick="worldAddExtra()">+ Field</button>
+                        </div>
+                        <div id="worldExtras" class="persona-extras-list"></div>
+                    </div>
+                    <div class="journal-editor-actions">
+                        <button class="btn-secondary" onclick="worldCancelEdit()">Cancel</button>
+                        <button class="btn-primary btn-sm" onclick="worldSave()">Save Place</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PERSONAS -->
+            <div class="page" id="page-personas">
+                <div class="section-header">
+                    <button class="back-btn" onclick="personasBack()">&larr;</button>
+                    <h2 id="personasTitle">Personas</h2>
+                    <button class="section-action-btn" id="personasNewBtn" onclick="personaNew()">+</button>
+                </div>
+
+                <!-- LIST VIEW -->
+                <div id="personasList" class="personas-list"></div>
+
+                <!-- DETAIL VIEW -->
+                <div id="personaDetail" class="persona-detail" style="display:none">
+                    <div class="detail-hero-image">
+                        <img id="personaDetailHeroImg" src="" style="display:none">
+                        <div id="personaDetailHeroPlaceholder" class="detail-hero-placeholder" style="display:none"></div>
+                        <div class="detail-hero-overlay">
+                            <h2 class="detail-hero-name" id="personaDetailName"></h2>
+                            <p class="detail-hero-age" id="personaDetailAge"></p>
+                        </div>
+                    </div>
+                    <div class="detail-actions-row">
+                        <button class="btn-secondary btn-sm" onclick="personaEdit()">Edit</button>
+                        <button class="btn-danger btn-sm" onclick="personaDelete()">Delete</button>
+                    </div>
+                    <div id="personaDetailFields" class="persona-detail-fields"></div>
+                </div>
+
+                <!-- EDITOR -->
+                <div id="personaEditor" class="persona-editor" style="display:none">
+                    <div class="persona-editor-avatar-row">
+                        <div class="persona-editor-avatar" id="personaEditorAvatar">
+                            <img id="personaEditorAvatarImg" src="" style="display:none">
+                            <span id="personaEditorAvatarInitial">?</span>
+                        </div>
+                        <div>
+                            <label class="btn-secondary btn-sm" for="personaPhotoUpload">Upload Photo</label>
+                            <input type="file" id="personaPhotoUpload" accept="image/*" style="display:none">
+                        </div>
+                    </div>
+                    <input class="auth-input persona-field-input" id="personaEdName" placeholder="Name in Clear Quartz">
+                    <input class="auth-input persona-field-input" id="personaEdAge" placeholder="Age (e.g. 26)">
+                    <textarea class="auth-input persona-field-input" id="personaEdAppearance" placeholder="Appearance &mdash; what do you look like there?" rows="3"></textarea>
+                    <textarea class="auth-input persona-field-input" id="personaEdPersonality" placeholder="Personality &mdash; who are you in Clear Quartz?" rows="3"></textarea>
+                    <textarea class="auth-input persona-field-input" id="personaEdDailyLife" placeholder="Daily life &mdash; what does a typical day look like?" rows="3"></textarea>
+                    <textarea class="auth-input persona-field-input" id="personaEdStyle" placeholder="Style &mdash; how do you dress, your aesthetic?" rows="3"></textarea>
+                    <textarea class="auth-input persona-field-input" id="personaEdBackstory" placeholder="Backstory &mdash; how did you come to be in Clear Quartz?" rows="3"></textarea>
+
+                    <div class="persona-extras-section">
+                        <div class="persona-extras-header">
+                            <span class="anchor-card-title" style="font-size:16px">Extras</span>
+                            <button class="btn-secondary btn-sm" onclick="personaAddExtra()">+ Field</button>
+                        </div>
+                        <div id="personaExtras" class="persona-extras-list"></div>
+                    </div>
+
+                    <div class="journal-editor-actions">
+                        <button class="btn-secondary" onclick="personaCancelEdit()">Cancel</button>
+                        <button class="btn-primary btn-sm" onclick="personaSave()">Save Persona</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONNECTIONS -->
+            <div class="page" id="page-connections">
+                <div class="section-header">
+                    <button class="back-btn" onclick="connectionsBack()">&larr;</button>
+                    <h2 id="connectionsTitle">Connections</h2>
+                    <button class="section-action-btn" id="connectionsNewBtn" onclick="connectionNew()">+</button>
+                </div>
+
+                <!-- FILTER TABS -->
+                <div class="connections-filters" id="connectionsFilters">
+                    <button class="connections-filter active" data-filter="all" onclick="filterConnections('all')">All</button>
+                    <button class="connections-filter" data-filter="love interest" onclick="filterConnections('love interest')">Love Interest</button>
+                    <button class="connections-filter" data-filter="friends" onclick="filterConnections('friends')">Friends</button>
+                    <button class="connections-filter" data-filter="kin" onclick="filterConnections('kin')">Kin</button>
+                    <button class="connections-filter" data-filter="pets" onclick="filterConnections('pets')">Pets</button>
+                </div>
+
+                <!-- LIST VIEW -->
+                <div id="connectionsList" class="personas-list"></div>
+
+                <!-- DETAIL VIEW -->
+                <div id="connectionDetail" class="persona-detail" style="display:none">
+                    <div class="detail-hero-image">
+                        <img id="connectionDetailHeroImg" src="" style="display:none">
+                        <div id="connectionDetailHeroPlaceholder" class="detail-hero-placeholder" style="display:none"></div>
+                        <div class="detail-hero-overlay">
+                            <h2 class="detail-hero-name" id="connectionDetailName"></h2>
+                            <p class="detail-hero-age" id="connectionDetailAge"></p>
+                            <div id="connectionDetailTag" class="connection-tag"></div>
+                        </div>
+                    </div>
+                    <div class="detail-actions-row">
+                        <button class="btn-secondary btn-sm" onclick="connectionEdit()">Edit</button>
+                        <button class="btn-danger btn-sm" onclick="connectionDelete()">Delete</button>
+                    </div>
+                    <div id="connectionDetailFields" class="persona-detail-fields"></div>
+                </div>
+
+                <!-- EDITOR -->
+                <div id="connectionEditor" class="persona-editor" style="display:none">
+                    <div class="persona-editor-avatar-row">
+                        <div class="persona-editor-avatar" id="connectionEditorAvatar">
+                            <img id="connectionEditorAvatarImg" src="" style="display:none">
+                            <span id="connectionEditorAvatarInitial">?</span>
+                        </div>
+                        <div>
+                            <label class="btn-secondary btn-sm" for="connectionPhotoUpload">Upload Photo</label>
+                            <input type="file" id="connectionPhotoUpload" accept="image/*" style="display:none">
+                        </div>
+                    </div>
+                    <input class="auth-input persona-field-input" id="connectionEdName" placeholder="Their name in Clear Quartz">
+                    <input class="auth-input persona-field-input" id="connectionEdAge" placeholder="Age (e.g. 28)">
+                    <div class="connection-type-picker">
+                        <span class="connection-type-label">Who are they?</span>
+                        <div class="connection-type-options" id="connectionTypeOptions">
+                            <button class="connection-type-btn" data-type="love interest" onclick="pickConnectionType('love interest')">Love Interest</button>
+                            <button class="connection-type-btn" data-type="friends" onclick="pickConnectionType('friends')">Friends</button>
+                            <button class="connection-type-btn" data-type="kin" onclick="pickConnectionType('kin')">Kin</button>
+                            <button class="connection-type-btn" data-type="pets" onclick="pickConnectionType('pets')">Pets</button>
+                        </div>
+                    </div>
+                    <textarea class="auth-input persona-field-input" id="connectionEdRelationship" placeholder="Relationship &mdash; who are they to you? How does it feel?" rows="3"></textarea>
+                    <textarea class="auth-input persona-field-input" id="connectionEdAppearance" placeholder="Appearance &mdash; what do they look like?" rows="3"></textarea>
+                    <textarea class="auth-input persona-field-input" id="connectionEdPersonality" placeholder="Personality &mdash; what are they like?" rows="3"></textarea>
+                    <textarea class="auth-input persona-field-input" id="connectionEdDailyLife" placeholder="Daily life &mdash; what do they do day to day?" rows="3"></textarea>
+                    <textarea class="auth-input persona-field-input" id="connectionEdStyle" placeholder="Style &mdash; how do they dress?" rows="3"></textarea>
+                    <textarea class="auth-input persona-field-input" id="connectionEdBackstory" placeholder="Backstory &mdash; their story in Clear Quartz" rows="3"></textarea>
+
+                    <div class="persona-extras-section">
+                        <div class="persona-extras-header">
+                            <span class="anchor-card-title" style="font-size:16px">Extras</span>
+                            <button class="btn-secondary btn-sm" onclick="connectionAddExtra()">+ Field</button>
+                        </div>
+                        <div id="connectionExtras" class="persona-extras-list"></div>
+                    </div>
+
+                    <div class="journal-editor-actions">
+                        <button class="btn-secondary" onclick="connectionCancelEdit()">Cancel</button>
+                        <button class="btn-primary btn-sm" onclick="connectionSave()">Save Connection</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OUR SPACE -->
+            <div class="page" id="page-space">
+                <div class="section-header">
+                    <button class="back-btn" onclick="spaceBack()">&larr;</button>
+                    <h2 id="spaceTitle">Life</h2>
+                    <button class="section-action-btn" id="spaceAddAlbumBtn" onclick="spaceNewAlbum()" title="New album">+</button>
+                </div>
+
+                <!-- ALBUMS VIEW -->
+                <div id="spaceAlbums" class="space-albums-grid"></div>
+
+                <!-- ALBUM CONTEXT MENU -->
+                <div class="modal-overlay" id="albumContextMenu" onclick="if(event.target===this)hideAlbumContextMenu()">
+                    <div class="album-context-content">
+                        <div id="albumContextMenuList" class="album-context-list"></div>
+                        <button class="album-context-cancel" onclick="hideAlbumContextMenu()">Cancel</button>
+                    </div>
+                </div>
+
+                <!-- ALBUM DETAIL VIEW (photo grid inside an album) -->
+                <div id="spaceAlbumView" style="display:none">
+                    <div class="space-album-header">
+                        <div class="space-album-header-info">
+                            <span class="space-album-count" id="spaceAlbumCount">0 photos</span>
+                        </div>
+                        <div class="space-album-actions">
+                            <label class="btn-secondary btn-sm" for="spacePhotoUpload">&#128247; Upload</label>
+                            <input type="file" id="spacePhotoUpload" accept="image/*" multiple style="display:none">
+                            <button class="btn-primary btn-sm" onclick="spaceOpenGenerate()">&#10024; Generate</button>
+                            <button class="btn-secondary btn-sm space-album-more-btn" onclick="toggleAlbumMoreMenu()">⋯</button>
+                        </div>
+                    </div>
+                    <div class="space-album-more-menu" id="albumMoreMenu" style="display:none">
+                        <button onclick="hideAlbumMoreMenu();spacePastePhoto()">&#128203; Paste from Clipboard</button>
+                        <button onclick="hideAlbumMoreMenu();spaceRenameCurrentAlbum()">&#9998; Rename Album</button>
+                        <button id="albumMoreDeleteBtn" class="album-more-delete" onclick="hideAlbumMoreMenu();spaceDeleteCurrentAlbum()">&#128465; Delete Album</button>
+                    </div>
+                    <div id="spacePhotoGrid" class="space-photo-grid"></div>
+                </div>
+
+                <!-- PHOTO DETAIL VIEW -->
+                <div id="spacePhotoDetail" style="display:none">
+                    <div class="space-photo-detail">
+                        <img id="spacePhotoDetailImg" src="" onclick="openPhotoLightbox()">
+                        <div class="space-photo-detail-caption" id="spacePhotoDetailCaption"></div>
+                        <div class="space-photo-detail-meta" id="spacePhotoDetailMeta"></div>
+                        <div class="space-photo-detail-actions">
+                            <button class="btn-secondary btn-sm" onclick="spaceSaveToDevice()">Save Image</button>
+                            <button class="btn-secondary btn-sm" onclick="spaceEditCaption()">Edit Caption</button>
+                            <button class="btn-secondary btn-sm" onclick="spaceMovePhoto()">Move to Album</button>
+                            <button class="btn-danger btn-sm" onclick="spaceDeletePhoto()">Delete</button>
+                        </div>
+                        <div class="space-photo-nav">
+                            <button class="space-photo-nav-btn" id="photoPrevBtn" onclick="window._navigatePhoto('prev')">&#8249;</button>
+                            <span class="space-photo-nav-counter" id="photoNavCounter"></span>
+                            <button class="space-photo-nav-btn" id="photoNextBtn" onclick="window._navigatePhoto('next')">&#8250;</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PHOTO LIGHTBOX (fullscreen zoom) -->
+                <div id="photoLightbox" class="photo-lightbox">
+                    <div class="photo-lightbox-topbar">
+                        <button class="photo-lightbox-close">&times;</button>
+                    </div>
+                    <div class="photo-lightbox-container" id="lightboxContainer">
+                        <img id="lightboxImg" src="" draggable="false">
+                    </div>
+                </div>
+
+                <!-- GENERATE MODAL -->
+                <div class="modal-overlay" id="spaceGenerateModal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Generate Image</h3>
+                            <button class="modal-close" onclick="spaceCloseGenerate()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="modal-description">Describe what you want to see. You can attach reference images for characters, places, or styles.</p>
+                            
+                            <div class="nano-banana-toggle">
+                                <span class="nb-label nb-label-left" id="nbLabelLeft">Nano Banana 2</span>
+                                <label class="nb-switch">
+                                    <input type="checkbox" id="nanoBananaModelToggle">
+                                    <span class="nb-slider"></span>
+                                </label>
+                                <span class="nb-label nb-label-right" id="nbLabelRight">Pro</span>
+                            </div>
+
+                            <textarea class="auth-input" id="spaceGenPrompt" placeholder="A golden retriever napping on the terrace of our Clear Quartz loft, warm afternoon light over the LA skyline..." rows="5" style="width:100%;resize:vertical;min-height:100px"></textarea>
+                            
+                            <div class="gen-saved-section">
+                                <div class="gen-saved-header" onclick="toggleSavedPrompts()">
+                                    <span class="gen-saved-toggle-icon" id="savedPromptsToggleIcon">&#9654;</span>
+                                    <label class="gen-saved-label">Saved Prompts</label>
+                                </div>
+                                <div id="savedPromptsBody" class="gen-saved-body" style="display:none">
+                                    <div id="savedPromptsList" class="gen-saved-list"></div>
+                                    <button class="btn-secondary btn-sm" onclick="saveCurrentPrompt()" style="width:100%;margin-top:var(--space-xs)">&#128190; Save Current Prompt</button>
+                                </div>
+                            </div>
+                            
+                            <div class="gen-ref-section">
+                                <label class="gen-ref-label">Reference images</label>
+                                <div class="gen-ref-grid" id="genRefGrid"></div>
+                                <div class="gen-ref-buttons">
+                                    <label class="btn-secondary btn-sm gen-ref-add" for="genRefUpload">+ Upload</label>
+                                    <button class="btn-secondary btn-sm gen-ref-add" onclick="pasteRefFromClipboard()">&#128203; Paste</button>
+                                </div>
+                                <input type="file" id="genRefUpload" accept="image/*" multiple style="display:none">
+                            </div>
+
+                            <div id="spaceGenThinkingPreview" class="space-gen-thinking-preview" style="display:none">
+                                <span class="space-gen-thinking-label">Thinking...</span>
+                                <img id="spaceGenThinkingImg" src="">
+                            </div>
+
+                            <div id="spaceGenPreview" class="space-gen-preview" style="display:none">
+                                <img id="spaceGenPreviewImg" src="">
+                                <div class="space-gen-preview-actions">
+                                    <button class="btn-secondary" onclick="spaceDiscardGenerated()">Discard</button>
+                                    <button class="btn-primary btn-sm" onclick="spaceSaveGenerated()">Save to Album</button>
+                                </div>
+                            </div>
+                            <div id="spaceGenLoading" class="space-gen-loading" style="display:none">
+                                <div class="space-gen-spinner"></div>
+                                <p>Creating your image...</p>
+                                <button class="btn-secondary btn-sm" onclick="spaceCancelGenerate()">Cancel</button>
+                            </div>
+                            <div id="spaceGenError" class="auth-error" style="margin-top:var(--space-sm)"></div>
+                        </div>
+                        <div class="modal-footer-sticky">
+                            <button class="btn-primary btn-sm" id="spaceGenBtn" onclick="spaceGenerate()" style="width:100%">&#10024; Generate</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- REFERENCE IMAGE PREVIEW -->
+                <div id="refPreviewOverlay" class="ref-preview-overlay" onclick="if(event.target===this)closeRefPreview()">
+                    <button class="ref-preview-close" onclick="closeRefPreview()">&times;</button>
+                    <img id="refPreviewImg" src="" class="ref-preview-img">
+                </div>
+
+                <!-- MOVE TO ALBUM MODAL -->
+                <div class="modal-overlay" id="spaceMoveModal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Move to Album</h3>
+                            <button class="modal-close" onclick="document.getElementById('spaceMoveModal').classList.remove('visible')">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="spaceMoveAlbumList" class="space-move-list"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEW ALBUM MODAL -->
+                <div class="modal-overlay" id="spaceNewAlbumModal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>New Album</h3>
+                            <button class="modal-close" onclick="document.getElementById('spaceNewAlbumModal').classList.remove('visible')">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <input class="auth-input" id="spaceNewAlbumName" placeholder="Album name..." style="width:100%;margin-bottom:var(--space-md)">
+                            <button class="btn-primary btn-sm" onclick="spaceCreateAlbum()" style="width:100%">Create Album</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EDIT CAPTION MODAL -->
+                <div class="modal-overlay" id="spaceEditCaptionModal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Edit Caption</h3>
+                            <button class="modal-close" onclick="document.getElementById('spaceEditCaptionModal').classList.remove('visible')">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <textarea class="auth-input" id="spaceEditCaptionInput" placeholder="Caption this moment..." rows="3" style="width:100%;resize:none"></textarea>
+                        </div>
+                        <div class="modal-footer-sticky">
+                            <button class="btn-primary btn-sm" onclick="spaceSaveCaption()" style="width:100%">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JOURNAL -->
+            <div class="page" id="page-journal">
+                <div class="section-header">
+                    <button class="back-btn" id="journalBackBtn" onclick="journalBack()">&larr;</button>
+                    <h2 id="journalTitle">Journal</h2>
+                    <button class="section-action-btn" id="journalNewBtn" onclick="journalNew()">+</button>
+                </div>
+                <div id="journalList" class="journal-entries"></div>
+                <div id="journalEditor" class="journal-editor">
+                    <input class="journal-editor-title" id="journalEditorTitle" placeholder="Title this moment...">
+                    <textarea class="journal-editor-body" id="journalEditorBody" placeholder="Write from within Clear Quartz. Not 'I want to...' but 'Today I...'
+
+You are already there."></textarea>
+                    <div class="journal-editor-actions">
+                        <button class="btn-secondary" onclick="journalCancel()">Cancel</button>
+                        <button class="btn-primary btn-sm" id="journalDeleteBtn" onclick="journalDelete()" style="display:none;background:var(--rose);">Delete</button>
+                        <button class="btn-primary btn-sm" onclick="journalSave()">Save Entry</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MESSENGER -->
+            <div class="page" id="page-messenger">
+                <div class="section-header"><button class="back-btn" onclick="nav('home')">&larr;</button><h2>Messenger</h2></div>
+                <div class="messenger-container">
+                    <div class="messenger-messages" id="messengerMessages"></div>
+                    <div class="messenger-input-area">
+                        <input class="messenger-input" id="messengerInput" placeholder="Message as your Clear Quartz self..." autocomplete="off">
+                        <button class="messenger-send" id="messengerSend">&rarr;</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MESSAGE CONTEXT MENU -->
+            <div class="msg-context-overlay" id="msgContextMenu" onclick="hideMsgMenu()">
+                <div class="msg-context-sheet" onclick="event.stopPropagation()">
+                    <button id="msgMenuEdit" onclick="msgEdit()">✎ Edit Message</button>
+                    <button class="msg-context-delete" onclick="msgDelete()">🗑 Delete Message</button>
+                    <button class="msg-context-cancel" onclick="hideMsgMenu()">Cancel</button>
+                </div>
+            </div>
+
+            <!-- SCENE BUILDER -->
+            <div class="page" id="page-gallery">
+                <div class="section-header">
+                    <button class="back-btn" onclick="sceneBack()">&larr;</button>
+                    <h2 id="sceneTitle">Scene Builder</h2>
+                    <button class="section-action-btn" id="sceneNewBtn" onclick="sceneNew()">+</button>
+                </div>
+
+                <!-- LIST VIEW -->
+                <div id="sceneList" class="scene-list"></div>
+
+                <!-- DETAIL VIEW -->
+                <div id="sceneDetail" class="scene-detail" style="display:none">
+                    <div class="scene-detail-image" id="sceneDetailImage" style="display:none">
+                        <img id="sceneDetailImg" src="">
+                    </div>
+                    <div class="scene-detail-body">
+                        <div class="scene-detail-mood" id="sceneDetailMood"></div>
+                        <h2 class="scene-detail-title" id="sceneDetailTitle"></h2>
+                        <div class="scene-detail-text" id="sceneDetailText"></div>
+                        <div class="scene-detail-meta" id="sceneDetailMeta"></div>
+                        <div class="scene-detail-actions">
+                            <button class="btn-secondary btn-sm" onclick="sceneEdit()">Edit</button>
+                            <button class="btn-danger btn-sm" onclick="sceneDelete()">Delete</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EDITOR -->
+                <div id="sceneEditor" class="scene-editor" style="display:none">
+                    <div class="scene-editor-image-area">
+                        <div class="scene-editor-image-preview" id="sceneEditorPreview">
+                            <img id="sceneEditorPreviewImg" src="" style="display:none">
+                            <div class="scene-editor-image-placeholder" id="sceneEditorPlaceholder">
+                                <span>&#127912;</span>
+                                <p>Add an image</p>
+                            </div>
+                        </div>
+                        <div class="scene-editor-image-actions">
+                            <label class="btn-secondary btn-sm" for="sceneImageUpload">Upload Photo</label>
+                            <input type="file" id="sceneImageUpload" accept="image/*" style="display:none">
+                            <button class="btn-secondary btn-sm" id="sceneRemoveImageBtn" onclick="sceneRemoveImage()" style="display:none">Remove</button>
+                        </div>
+                    </div>
+                    <input class="journal-editor-title" id="sceneEdTitle" placeholder="Title this moment...">
+                    <textarea class="journal-editor-body" id="sceneEdBody" placeholder="Describe the scene. What are you doing? What does the air feel like? You are there." rows="6"></textarea>
+                    <div class="scene-mood-picker">
+                        <span class="scene-mood-label">Mood</span>
+                        <div class="scene-mood-options" id="sceneMoodOptions">
+                            <button class="scene-mood-btn" data-mood="serene" onclick="pickSceneMood('serene')">&#127807; Serene</button>
+                            <button class="scene-mood-btn" data-mood="golden" onclick="pickSceneMood('golden')">&#9728;&#65039; Golden</button>
+                            <button class="scene-mood-btn" data-mood="cosy" onclick="pickSceneMood('cosy')">&#128367;&#65039; Cosy</button>
+                            <button class="scene-mood-btn" data-mood="romantic" onclick="pickSceneMood('romantic')">&#127801; Romantic</button>
+                            <button class="scene-mood-btn" data-mood="adventure" onclick="pickSceneMood('adventure')">&#10024; Adventure</button>
+                            <button class="scene-mood-btn" data-mood="misty" onclick="pickSceneMood('misty')">&#127787;&#65039; Misty</button>
+                        </div>
+                    </div>
+                    <div class="journal-editor-actions">
+                        <button class="btn-secondary" onclick="sceneCancelEdit()">Cancel</button>
+                        <button class="btn-primary btn-sm" onclick="sceneSave()">Save Scene</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TIMELINE -->
+            <div class="page" id="page-timeline">
+                <div class="section-header">
+                    <button class="back-btn" onclick="timelineBack()">&larr;</button>
+                    <h2 id="timelineTitle">Timeline</h2>
+                    <button class="section-action-btn" id="timelineNewBtn" onclick="timelineNew()">+</button>
+                </div>
+
+                <!-- LIST VIEW -->
+                <div id="timelineList" class="timeline-list"></div>
+
+                <!-- EDITOR -->
+                <div id="timelineEditor" class="timeline-editor" style="display:none">
+                    <input class="auth-input" type="date" id="timelineEdDate" style="width:100%;color-scheme:dark">
+                    <input class="journal-editor-title" id="timelineEdTitle" placeholder="What happened?">
+                    <textarea class="journal-editor-body" id="timelineEdBody" placeholder="Describe this moment in your life in Clear Quartz. Be there as you write it." rows="5"></textarea>
+                    <div class="scene-mood-picker">
+                        <span class="scene-mood-label">Category</span>
+                        <div class="scene-mood-options" id="timelineCatOptions">
+                            <button class="scene-mood-btn" data-mood="milestone" onclick="pickTimelineCat('milestone')">&#10024; Milestone</button>
+                            <button class="scene-mood-btn" data-mood="everyday" onclick="pickTimelineCat('everyday')">&#127807; Everyday</button>
+                            <button class="scene-mood-btn" data-mood="love" onclick="pickTimelineCat('love')">&#128154; Love</button>
+                            <button class="scene-mood-btn" data-mood="adventure" onclick="pickTimelineCat('adventure')">&#127758; Adventure</button>
+                            <button class="scene-mood-btn" data-mood="home" onclick="pickTimelineCat('home')">&#127968; Home</button>
+                            <button class="scene-mood-btn" data-mood="memory" onclick="pickTimelineCat('memory')">&#128338; Memory</button>
+                        </div>
+                    </div>
+                    <div class="journal-editor-actions">
+                        <button class="btn-secondary" onclick="timelineCancelEdit()">Cancel</button>
+                        <button class="btn-primary btn-sm" id="timelineDeleteBtn" onclick="timelineDelete()" style="display:none;background:var(--rose);">Delete</button>
+                        <button class="btn-primary btn-sm" onclick="timelineSave()">Save Moment</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ANCHORS -->
+            <div class="page" id="page-anchors">
+                <div class="section-header"><button class="back-btn" onclick="nav('home')">&larr;</button><h2>Sensory Anchors</h2></div>
+                <p class="anchors-intro">The sensory threads that pull you into Clear Quartz instantly. A song, a colour, a sense &mdash; and you&rsquo;re there.</p>
+
+                <!-- TABS -->
+                <div class="anchors-tabs">
+                    <button class="anchors-tab active" data-tab="playlists" onclick="anchorsTab('playlists')">&#127925; Playlists</button>
+                    <button class="anchors-tab" data-tab="palettes" onclick="anchorsTab('palettes')">&#127912; Palettes</button>
+                    <button class="anchors-tab" data-tab="scents" onclick="anchorsTab('scents')">&#10024; Senses</button>
+                </div>
+
+                <!-- PLAYLISTS TAB -->
+                <div class="anchors-panel active" id="anchorsPanel-playlists">
+                    <div class="anchors-add-area">
+                        <input class="auth-input" id="playlistUrlInput" placeholder="Paste a Spotify URL (song, album, or playlist)..." style="width:100%">
+                        <input class="auth-input" id="playlistNameInput" placeholder="Name this vibe... (optional)" style="width:100%;margin-top:var(--space-sm)">
+                        <button class="btn-primary btn-sm" onclick="addPlaylist()" style="margin-top:var(--space-sm)">Add Music</button>
+                    </div>
+                    <div id="playlistsList" class="anchors-list"></div>
+                </div>
+
+                <!-- PALETTES TAB -->
+                <div class="anchors-panel" id="anchorsPanel-palettes">
+                    <div class="anchors-add-area">
+                        <input class="auth-input" id="paletteNameInput" placeholder="Name this palette... (e.g. Morning Mist)" style="width:100%">
+                        <div class="palette-builder" id="paletteBuilder">
+                            <div class="palette-builder-colours" id="paletteBuilderColours"></div>
+                            <div class="palette-builder-controls">
+                                <input type="color" id="paletteColourPicker" value="#5a9e7a" class="palette-colour-input">
+                                <button class="btn-secondary btn-sm" onclick="addPaletteColour()">+ Colour</button>
+                            </div>
+                        </div>
+                        <button class="btn-primary btn-sm" onclick="savePalette()" style="margin-top:var(--space-sm)">Save Palette</button>
+                    </div>
+                    <div id="palettesList" class="anchors-list"></div>
+                </div>
+
+                <!-- SENSES TAB -->
+                <div class="anchors-panel" id="anchorsPanel-scents">
+                    <div class="anchors-add-area">
+                        <div class="senses-type-row">
+                            <button class="sense-type-btn active" data-sense="smell" onclick="selectSenseType(this)">Smell</button>
+                            <button class="sense-type-btn" data-sense="sound" onclick="selectSenseType(this)">Sound</button>
+                            <button class="sense-type-btn" data-sense="touch" onclick="selectSenseType(this)">Touch</button>
+                            <button class="sense-type-btn" data-sense="taste" onclick="selectSenseType(this)">Taste</button>
+                            <button class="sense-type-btn" data-sense="sight" onclick="selectSenseType(this)">Sight</button>
+                        </div>
+                        <input class="auth-input" id="scentTitleInput" placeholder="Name this sense..." style="width:100%;margin-top:var(--space-sm)">
+                        <textarea class="auth-input" id="scentBodyInput" placeholder="Describe it vividly..." rows="3" style="width:100%;margin-top:var(--space-sm);resize:none"></textarea>
+                        <button class="btn-primary btn-sm" onclick="addScent()" style="margin-top:var(--space-sm)">Add Sense</button>
+                    </div>
+                    <div id="scentsList" class="anchors-list"></div>
+                </div>
+            </div>
+
+            <!-- SETTINGS -->
+            <div class="page" id="page-settings">
+                <div class="section-header"><button class="back-btn" onclick="nav('home')">&larr;</button><h2>Settings</h2></div>
+                <div class="settings-section">
+                    <h3>Account</h3>
+                    <div class="settings-avatar-row">
+                        <div class="settings-avatar" id="settingsAvatar">
+                            <img id="settingsAvatarImg" src="" style="display:none">
+                            <span id="settingsAvatarInitial"></span>
+                        </div>
+                        <div class="settings-avatar-actions">
+                            <label class="btn-secondary settings-avatar-btn" for="avatarUpload">Change Photo</label>
+                            <input type="file" id="avatarUpload" accept="image/*" style="display:none">
+                        </div>
+                    </div>
+                    <div class="settings-row"><span class="settings-label">Signed in as</span><span class="settings-value" id="settingsEmail">&mdash;</span></div>
+                    <div class="settings-row">
+                        <span class="settings-label">Display name</span>
+                        <span class="settings-value" id="settingsName">&mdash;</span>
+                    </div>
+                    <div style="margin-top:var(--space-sm)">
+                        <input class="auth-input" type="text" id="settingsNameInput" placeholder="Your name in Clear Quartz" style="width:100%;margin-bottom:var(--space-sm)">
+                        <button class="btn-secondary" onclick="updateDisplayName()">Update Name</button>
+                    </div>
+                    <div style="margin-top:var(--space-md)"><button class="btn-danger" onclick="signOut()">Sign Out</button></div>
+                </div>
+                <div class="settings-section">
+                    <h3>Gemini API Key</h3>
+                    <p style="font-size:13px;color:var(--jade-medium);margin-bottom:var(--space-md);line-height:1.5">For Nano Banana image generation. Stored only in your browser.</p>
+                    <input class="auth-input" type="password" id="geminiApiKey" placeholder="Paste your Gemini API key" style="width:100%;margin-bottom:var(--space-sm)">
+                    <button class="btn-secondary" onclick="saveGeminiKey()">Save Key</button>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Notifications</h3>
+                    <p style="font-size:13px;color:var(--jade-medium);margin-bottom:var(--space-md);line-height:1.5">Receive gentle reminders and alerts from Clear Quartz.</p>
+                    <p id="notifStatus" style="font-size:13px;margin-bottom:var(--space-md)"></p>
+                    <button class="btn-primary" id="notifEnableBtn" onclick="requestNotificationPermission()" style="margin-bottom:var(--space-md)">Enable Notifications</button>
+                    <div id="notifPreferences" style="display:none">
+                        <label class="notif-pref-row">
+                            <span class="notif-pref-label">✨ Random affirmations</span>
+                            <input type="checkbox" id="notifAffirmations" checked onchange="updateNotifPreference('affirmations', this.checked)">
+                        </label>
+                        <label class="notif-pref-row">
+                            <span class="notif-pref-label">📖 Daily journal reminder</span>
+                            <input type="checkbox" id="notifJournal" checked onchange="updateNotifPreference('journalReminder', this.checked)">
+                        </label>
+                        <label class="notif-pref-row">
+                            <span class="notif-pref-label">💬 New messages</span>
+                            <input type="checkbox" id="notifMessages" checked onchange="updateNotifPreference('messages', this.checked)">
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- PERSISTENT MINI SPOTIFY PLAYER -->
+        <div class="mini-player" id="miniPlayer" style="display:none">
+            <div class="mini-player-info">
+                <span class="mini-player-icon">&#127925;</span>
+                <span class="mini-player-name" id="miniPlayerName">Now Playing</span>
+            </div>
+            <div class="mini-player-controls">
+                <button class="mini-player-btn" id="miniPlayerExpand" title="Expand">&#9650;</button>
+                <button class="mini-player-btn" id="miniPlayerClose" title="Close">&times;</button>
+            </div>
+            <div class="mini-player-embed" id="miniPlayerEmbed"></div>
+        </div>
+        </div><!-- end content-area-wrapper -->
+
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-nav="home"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></button>
+            <button class="nav-item" data-nav="journal"><span class="nav-icon">🔖</span><span class="nav-label">Journal</span></button>
+            <button class="nav-item" data-nav="messenger"><span class="nav-icon">&#128172;</span><span class="nav-label">Messages</span></button>
+            <button class="nav-item" data-nav="gallery"><span class="nav-icon">🎬</span><span class="nav-label">Scenes</span></button>
+            <button class="nav-item" data-nav="settings"><span class="nav-icon">⚙️</span><span class="nav-label">Settings</span></button> 
+        </nav>
+    </div>
+
+    <!-- PHOTO CROP MODAL -->
+    <div id="cropModal" class="crop-modal">
+        <div class="crop-header">
+            <button class="crop-cancel" onclick="closeCropModal()">Cancel</button>
+            <span class="crop-title">Adjust Photo</span>
+            <button class="crop-confirm" onclick="confirmCrop()">Done</button>
+        </div>
+        <div class="crop-area" id="cropArea">
+            <div class="crop-circle-mask"></div>
+            <img id="cropImg" src="" draggable="false">
+        </div>
+        <div class="crop-hint">Drag to reposition</div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

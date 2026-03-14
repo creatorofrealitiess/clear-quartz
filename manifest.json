@@ -1,0 +1,25 @@
+{
+    "name": "Clear Quartz",
+    "short_name": "Clear Quartz",
+    "description": "Clarity lives here",
+    "start_url": "./",
+    "scope": "./",
+    "display": "standalone",
+    "background_color": "#f7f4fa",
+    "theme_color": "#9b7ec8",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "./icons/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "./icons/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}
