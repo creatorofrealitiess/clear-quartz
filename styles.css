@@ -5,11 +5,11 @@
 
 :root {
     /* Crystal Base — deep navy-slate from icon background */
-    --bg-deep: #141a22;
-    --bg-main: #181e2a;
-    --bg-card: #1f2734;
-    --bg-elevated: #263040;
-    --bg-surface: #2e3a4a;
+    --bg-deep: #161c26;
+    --bg-main: #1a2230;
+    --bg-card: #2a3545;
+    --bg-elevated: #354050;
+    --bg-surface: #3f4a5a;
 
     /* Clear Quartz Crystal Palette — icy silver-blue */
     --jade-deep: #7c8896;
@@ -70,7 +70,7 @@
 }
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html { height: 100%; overflow: hidden; background: #141a22; }
+html { height: 100%; overflow: hidden; background: #161c26; }
 
 body {
     font-family: var(--font-body);

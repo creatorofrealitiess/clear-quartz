@@ -1,4 +1,4 @@
-const CACHE_NAME = 'clearquartz-v3';
+const CACHE_NAME = 'clearquartz-v4';
 const ASSETS = [
     './',
     './index.html',
