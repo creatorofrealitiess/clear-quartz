@@ -96,14 +96,14 @@
                 </div>
 
                 <div class="feature-grid">
-                    <a class="feature-card" data-page="world"><span class="feature-card-icon">🌏</span><div class="feature-card-title">The World</div><div class="feature-card-desc">Places around the world in Clear Quartz</div></a>
+                    <a class="feature-card" data-page="world"><span class="feature-card-icon">🌏</span><div class="feature-card-title">The World</div><div class="feature-card-desc">Everything about the world of Clear Quartz</div></a>
                     <a class="feature-card" data-page="personas" data-accent="rose"><span class="feature-card-icon">🧘🏽‍♀️</span><div class="feature-card-title">Personas</div><div class="feature-card-desc">Who we are in Clear Quartz</div></a>
                     <a class="feature-card" data-page="space" data-accent="honey"><span class="feature-card-icon">🎞</span><div class="feature-card-title">Life</div><div class="feature-card-desc">Photo albums of life in Clear Quartz</div></a>
                     <a class="feature-card" data-page="journal"><span class="feature-card-icon">🔖</span><div class="feature-card-title">Journal</div><div class="feature-card-desc">Entries from within Clear Quartz</div></a>
                     <a class="feature-card" data-page="messenger" data-accent="sky"><span class="feature-card-icon">&#128172;</span><div class="feature-card-title">Messenger</div><div class="feature-card-desc">Our messages in Clear Quartz</div></a>
                     <a class="feature-card" data-page="gallery" data-accent="honey"><span class="feature-card-icon">🎬</span><div class="feature-card-title">Scene Builder</div><div class="feature-card-desc">Memories of special moments</div></a>
                     <a class="feature-card" data-page="timeline" data-accent="lavender"><span class="feature-card-icon">⏳</span><div class="feature-card-title">Timeline</div><div class="feature-card-desc">The story of our lives in Clear Quartz</div></a>
-                    <a class="feature-card" data-page="anchors" data-accent="rose"><span class="feature-card-icon">🔮</span><div class="feature-card-title">Sensory Anchors</div><div class="feature-card-desc">Everything that grounds us in Clear Quartz</div></a>
+                    <a class="feature-card full-width" data-page="anchors" data-accent="rose"><span class="feature-card-icon">🔮</span><div class="feature-card-title">Sensory Anchors</div><div class="feature-card-desc">Everything that grounds us in Clear Quartz</div></a>
                 </div>
                 <div class="botanical-accent">&#10086; &#10086; &#10086;</div>
             </div>
@@ -119,74 +119,55 @@
                 <!-- FILTER TABS -->
                 <div class="connections-filters" id="worldFilters">
                     <button class="connections-filter active" data-filter="all" onclick="filterWorld('all')">All</button>
-                    <button class="connections-filter" data-filter="home" onclick="filterWorld('home')">Home</button>
-                    <button class="connections-filter" data-filter="city" onclick="filterWorld('city')">City</button>
-                    <button class="connections-filter" data-filter="work" onclick="filterWorld('work')">Work</button>
-                    <button class="connections-filter" data-filter="daily spots" onclick="filterWorld('daily spots')">Daily Spots</button>
-                    <button class="connections-filter" data-filter="shop" onclick="filterWorld('shop')">Shop</button>
-                    <button class="connections-filter" data-filter="special" onclick="filterWorld('special')">Special</button>
+                    <button class="connections-filter" data-filter="history" onclick="filterWorld('history')">History</button>
+                    <button class="connections-filter" data-filter="culture" onclick="filterWorld('culture')">Culture</button>
+                    <button class="connections-filter" data-filter="people" onclick="filterWorld('people')">People</button>
+                    <button class="connections-filter" data-filter="rules" onclick="filterWorld('rules')">Rules &amp; Laws</button>
+                    <button class="connections-filter" data-filter="technology" onclick="filterWorld('technology')">Technology</button>
+                    <button class="connections-filter" data-filter="nature" onclick="filterWorld('nature')">Nature</button>
                 </div>
 
-                <div id="worldList" class="personas-list"></div>
+                <!-- LIST VIEW -->
+                <div id="worldList" class="wiki-list"></div>
 
-                <div id="worldDetail" class="persona-detail" style="display:none">
-                    <div class="detail-hero-image">
-                        <img id="worldDetailHeroImg" src="" style="display:none">
-                        <div id="worldDetailHeroPlaceholder" class="detail-hero-placeholder" style="display:none">
-                            <span id="worldDetailHeroIcon">&#127807;</span>
-                        </div>
-                        <div class="detail-hero-overlay">
-                            <h2 class="detail-hero-name" id="worldDetailName"></h2>
-                            <div id="worldDetailTag" class="connection-tag" style="display:none"></div>
-                        </div>
+                <!-- DETAIL VIEW (wiki page) -->
+                <div id="worldDetail" class="wiki-detail" style="display:none">
+                    <div class="wiki-detail-header">
+                        <h2 class="wiki-detail-title" id="worldDetailName"></h2>
+                        <div id="worldDetailTag" class="wiki-tag" style="display:none"></div>
                     </div>
                     <div class="detail-actions-row">
                         <button class="btn-secondary btn-sm" onclick="worldEdit()">Edit</button>
                         <button class="btn-danger btn-sm" onclick="worldDelete()">Delete</button>
                     </div>
-                    <div id="worldDetailFields" class="persona-detail-fields"></div>
+                    <div id="worldDetailFields" class="wiki-detail-sections"></div>
                 </div>
 
+                <!-- EDITOR -->
                 <div id="worldEditor" class="persona-editor" style="display:none">
-                    <div class="world-editor-photo-row">
-                        <div class="world-editor-photo" id="worldEditorPhoto">
-                            <img id="worldEditorPhotoImg" src="" style="display:none">
-                            <span id="worldEditorPhotoIcon">&#127807;</span>
-                        </div>
-                        <div>
-                            <label class="btn-secondary btn-sm" for="worldPhotoUpload">Upload Photo</label>
-                            <input type="file" id="worldPhotoUpload" accept="image/*" style="display:none">
-                            <div class="anchor-card-meta" style="margin-top:4px">A place in Clear Quartz</div>
-                        </div>
-                    </div>
-                    <input class="auth-input persona-field-input" id="worldEdName" placeholder="Name of this place">
+                    <input class="auth-input persona-field-input" id="worldEdName" placeholder="Title of this entry">
                     <div class="connection-type-picker">
-                        <span class="connection-type-label">What kind of place?</span>
+                        <span class="connection-type-label">Category</span>
                         <div class="connection-type-options" id="worldTypeOptions">
-                            <button class="connection-type-btn" data-type="home" onclick="pickWorldType('home')">&#127968; Home</button>
-                            <button class="connection-type-btn" data-type="city" onclick="pickWorldType('city')">&#127750; City</button>
-                            <button class="connection-type-btn" data-type="work" onclick="pickWorldType('work')">&#128188; Work</button>
-                            <button class="connection-type-btn" data-type="daily spots" onclick="pickWorldType('daily spots')">&#9749; Daily Spots</button>
-                            <button class="connection-type-btn" data-type="shop" onclick="pickWorldType('shop')">&#128722; Shop</button>
-                            <button class="connection-type-btn" data-type="special" onclick="pickWorldType('special')">&#10024; Special</button>
+                            <button class="connection-type-btn" data-type="history" onclick="pickWorldType('history')">&#128220; History</button>
+                            <button class="connection-type-btn" data-type="culture" onclick="pickWorldType('culture')">&#127917; Culture</button>
+                            <button class="connection-type-btn" data-type="people" onclick="pickWorldType('people')">&#129489; People</button>
+                            <button class="connection-type-btn" data-type="rules" onclick="pickWorldType('rules')">&#9878; Rules &amp; Laws</button>
+                            <button class="connection-type-btn" data-type="technology" onclick="pickWorldType('technology')">&#9881; Technology</button>
+                            <button class="connection-type-btn" data-type="nature" onclick="pickWorldType('nature')">&#127793; Nature</button>
                         </div>
                     </div>
-                    <textarea class="auth-input persona-field-input" id="worldEdDescription" placeholder="Describe this place &mdash; what does it look like? What&rsquo;s the feel?" rows="4"></textarea>
-                    <textarea class="auth-input persona-field-input" id="worldEdAtmosphere" placeholder="Atmosphere &mdash; the light, the sounds, the mood when you&rsquo;re here" rows="3"></textarea>
-                    <textarea class="auth-input persona-field-input" id="worldEdSensory" placeholder="Sensory details &mdash; what do you smell, taste, feel on your skin?" rows="3"></textarea>
-                    <textarea class="auth-input persona-field-input" id="worldEdMemories" placeholder="Memories &mdash; what has happened here? What moments live in this place?" rows="3"></textarea>
-                    <textarea class="auth-input persona-field-input" id="worldEdSeasons" placeholder="Seasons &mdash; how does this place change through the year?" rows="3"></textarea>
-                    <textarea class="auth-input persona-field-input" id="worldEdLore" placeholder="Lore &mdash; any history, legends, or secrets about this place?" rows="3"></textarea>
+                    <textarea class="auth-input persona-field-input" id="worldEdOverview" placeholder="Overview &mdash; a summary of this topic" rows="5"></textarea>
                     <div class="persona-extras-section">
                         <div class="persona-extras-header">
-                            <span class="anchor-card-title" style="font-size:16px">Extras</span>
-                            <button class="btn-secondary btn-sm" onclick="worldAddExtra()">+ Field</button>
+                            <span class="anchor-card-title" style="font-size:16px">Sections</span>
+                            <button class="btn-secondary btn-sm" onclick="worldAddExtra()">+ Section</button>
                         </div>
                         <div id="worldExtras" class="persona-extras-list"></div>
                     </div>
                     <div class="journal-editor-actions">
                         <button class="btn-secondary" onclick="worldCancelEdit()">Cancel</button>
-                        <button class="btn-primary btn-sm" onclick="worldSave()">Save Place</button>
+                        <button class="btn-primary btn-sm" onclick="worldSave()">Save Entry</button>
                     </div>
                 </div>
             </div>

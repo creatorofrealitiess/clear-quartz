@@ -1440,17 +1440,84 @@ body::after {
 /* ═══════ WORLD / LOCATIONS ═══════ */
 
 .world-editor-photo-row {
-    display: flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-lg);
+    display: none;
 }
 
-.world-editor-photo {
-    width: 80px; height: 56px; border-radius: var(--radius-md);
-    background: var(--bg-surface); border: 2px solid var(--jade-pale);
-    overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+/* ═══════ WIKI LIST & DETAIL STYLES ═══════ */
+.wiki-list { display: flex; flex-direction: column; gap: var(--space-sm); }
+
+.wiki-entry-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: var(--space-md) var(--space-lg);
+    border: var(--border-subtle);
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
-.world-editor-photo img { width: 100%; height: 100%; object-fit: cover; }
-.world-editor-photo span { font-size: 24px; }
+.wiki-entry-card:hover {
+    box-shadow: var(--shadow-soft);
+    border-color: rgba(176, 179, 184, 0.2);
+}
+
+.wiki-entry-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xs);
+    flex-wrap: wrap;
+}
+
+.wiki-entry-title {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.wiki-entry-tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.wiki-entry-preview {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: var(--space-xs);
+}
+
+.wiki-entry-meta {
+    font-size: 11px;
+    color: var(--text-faint);
+}
+
+.wiki-detail { }
+
+.wiki-detail-header {
+    margin-bottom: var(--space-md);
+}
+
+.wiki-detail-title {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: var(--space-xs);
+}
+
+.wiki-tag {
+    font-size: 12px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.wiki-detail-sections { }
 
 /* ═══════ OUR SPACE — PHOTO GALLERY ═══════ */
 .space-albums-grid {

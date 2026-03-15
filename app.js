@@ -1664,34 +1664,37 @@ function renderScents() {
     }).join('');
 }
 
-// ═══════ WORLD / LOCATIONS (Firestore synced) ═══════
+// ═══════ WORLD / WIKI (Firestore synced) ═══════
 
 let worldData = [];
 let worldUnsub = null;
 let editingWorldId = null;
 let worldEditorExtras = [];
-let worldPhotoFile = null;
-let worldPhotoPreview = '';
 let worldSelectedType = '';
 let worldFilter = 'all';
 
-const worldTypeIcons = {
-    home: '\u{1F3E0}', city: '\u{1F306}', work: '\u{1F4BC}',
-    'daily spots': '\u{2615}', shop: '\u{1F6D2}', special: '\u2728'
+const worldCatIcons = {
+    history: '\u{1F4DC}', culture: '\u{1F3AD}', people: '\u{1F9D1}',
+    rules: '\u2696', technology: '\u2699', nature: '\u{1F331}'
 };
 
-const worldTypeColours = {
-    home: { bg: 'rgba(201, 164, 90, 0.15)', color: 'var(--honey)' },
-    city: { bg: 'rgba(106, 150, 176, 0.15)', color: 'var(--sky)' },
-    work: { bg: 'rgba(155, 138, 184, 0.15)', color: 'var(--lavender)' },
-    'daily spots': { bg: 'rgba(90, 158, 122, 0.15)', color: 'var(--jade-primary)' },
-    shop: { bg: 'rgba(201, 164, 90, 0.15)', color: 'var(--honey)' },
-    special: { bg: 'rgba(201, 134, 126, 0.15)', color: 'var(--rose)' }
+const worldCatLabels = {
+    history: 'History', culture: 'Culture', people: 'People',
+    rules: 'Rules & Laws', technology: 'Technology', nature: 'Nature'
+};
+
+const worldCatColours = {
+    history: { bg: 'rgba(201, 164, 90, 0.15)', color: 'var(--honey)' },
+    culture: { bg: 'rgba(196, 112, 128, 0.15)', color: 'var(--rose)' },
+    people: { bg: 'rgba(123, 167, 212, 0.15)', color: 'var(--sky)' },
+    rules: { bg: 'rgba(138, 155, 174, 0.15)', color: 'var(--lavender)' },
+    technology: { bg: 'rgba(176, 179, 184, 0.15)', color: 'var(--jade-primary)' },
+    nature: { bg: 'rgba(130, 180, 130, 0.15)', color: '#82b482' }
 };
 
 function initWorld() {
     if (worldUnsub) worldUnsub();
-    worldUnsub = db.collection('world').orderBy('createdAt', 'asc').onSnapshot(snapshot => {
+    worldUnsub = db.collection('world').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
         worldData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderWorldList();
     });
@@ -1702,24 +1705,28 @@ function renderWorldList() {
     const filtered = worldFilter === 'all' ? worldData : worldData.filter(w => w.type === worldFilter);
 
     if (worldData.length === 0) {
-        container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">&#127807;</div><p>No places yet. Tap + to build the first corner of your Clear Quartz world.</p></div>';
+        container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">&#127807;</div><p>No entries yet. Tap + to start building the world of Clear Quartz.</p></div>';
         return;
     }
     if (filtered.length === 0) {
-        container.innerHTML = '<div class="empty-state" style="padding:var(--space-xl) 0"><p>No ' + worldFilter + ' places yet.</p></div>';
+        container.innerHTML = '<div class="empty-state" style="padding:var(--space-xl) 0"><p>No ' + (worldCatLabels[worldFilter] || worldFilter) + ' entries yet.</p></div>';
         return;
     }
 
-    container.innerHTML = '<div class="char-card-grid">' + filtered.map(w => {
-        const icon = worldTypeIcons[w.type] || '\u{1F33F}';
-        const hasPhoto = !!w.photoUrl;
-        return '<div class="char-card" onclick="worldOpen(\'' + w.id + '\')">' +
-            '<div class="char-card-img">' +
-                (hasPhoto ? '<img src="' + w.photoUrl + '" alt="">' : '<div class="char-card-placeholder"><span>' + icon + '</span></div>') +
-                '<div class="char-card-name-overlay"><span class="char-card-name">' + escapeHtml(w.name || 'Unnamed') + '</span></div>' +
+    container.innerHTML = filtered.map(w => {
+        const icon = worldCatIcons[w.type] || '\u{1F30D}';
+        const catLabel = worldCatLabels[w.type] || '';
+        const colours = worldCatColours[w.type] || {};
+        const preview = w.overview ? (w.overview.length > 120 ? w.overview.substring(0, 120) + '...' : w.overview) : '';
+        return '<div class="wiki-entry-card" onclick="worldOpen(\'' + w.id + '\')">' +
+            '<div class="wiki-entry-header">' +
+                '<span class="wiki-entry-title">' + escapeHtml(w.name || 'Untitled') + '</span>' +
+                (catLabel ? '<span class="wiki-entry-tag" style="background:' + (colours.bg || '') + ';color:' + (colours.color || '') + '">' + icon + ' ' + catLabel + '</span>' : '') +
             '</div>' +
+            (preview ? '<div class="wiki-entry-preview">' + escapeHtml(preview) + '</div>' : '') +
+            '<div class="wiki-entry-meta">' + (w.authorName || '') + '</div>' +
         '</div>';
-    }).join('') + '</div>';
+    }).join('');
 }
 
 function filterWorld(type) {
@@ -1749,85 +1756,68 @@ function worldOpen(id) {
     if (!w) return;
     editingWorldId = id;
 
-    const heroImg = document.getElementById('worldDetailHeroImg');
-    const heroPlaceholder = document.getElementById('worldDetailHeroPlaceholder');
-    if (w.photoUrl) { heroImg.src = w.photoUrl; heroImg.style.display = 'block'; heroPlaceholder.style.display = 'none'; }
-    else { heroImg.style.display = 'none'; heroPlaceholder.style.display = 'flex'; document.getElementById('worldDetailHeroIcon').textContent = worldTypeIcons[w.type] || '\u{1F33F}'; }
-
-    document.getElementById('worldDetailName').textContent = w.name || 'Unnamed';
+    document.getElementById('worldDetailName').textContent = w.name || 'Untitled';
     const tagEl = document.getElementById('worldDetailTag');
     if (w.type) {
-        const colours = worldTypeColours[w.type] || worldTypeColours.nature;
-        tagEl.textContent = (worldTypeIcons[w.type] || '') + ' ' + w.type;
-        tagEl.style.background = colours.bg; tagEl.style.color = colours.color; tagEl.style.display = 'inline-block';
+        const colours = worldCatColours[w.type] || {};
+        tagEl.textContent = (worldCatIcons[w.type] || '') + ' ' + (worldCatLabels[w.type] || w.type);
+        tagEl.style.background = colours.bg || ''; tagEl.style.color = colours.color || ''; tagEl.style.display = 'inline-block';
     } else { tagEl.style.display = 'none'; }
 
-    const fixedFields = [
-        { label: 'Description', value: w.description }, { label: 'Atmosphere', value: w.atmosphere },
-        { label: 'Sensory Details', value: w.sensory }, { label: 'Memories', value: w.memories },
-        { label: 'Seasons', value: w.seasons }, { label: 'Lore', value: w.lore }
-    ];
+    // Build sections: overview first, then custom sections
+    const sections = [];
+    if (w.overview) sections.push({ label: 'Overview', value: w.overview });
     const extras = w.extras || [];
-    const allFields = [...fixedFields, ...extras.map(e => ({ label: e.label, value: e.value }))];
-    const filledFields = allFields.filter(f => f.value);
-    document.getElementById('worldDetailFields').innerHTML = filledFields.length > 0
-        ? '<div class="detail-info-block">' + filledFields.map((f, i) =>
+    extras.forEach(e => { if (e.label || e.value) sections.push({ label: e.label, value: e.value }); });
+
+    document.getElementById('worldDetailFields').innerHTML = sections.length > 0
+        ? '<div class="detail-info-block">' + sections.map((f, i) =>
             '<div class="detail-info-section">' +
                 '<span class="detail-info-pill">' + escapeHtml(f.label) + '</span>' +
                 '<div class="detail-info-text">' + escapeHtml(f.value) + '</div>' +
             '</div>' +
-            (i < filledFields.length - 1 ? '<div class="detail-info-divider"></div>' : '')
+            (i < sections.length - 1 ? '<div class="detail-info-divider"></div>' : '')
         ).join('') + '</div>'
-        : '';
+        : '<div class="empty-state" style="padding:var(--space-xl) 0"><p>No content yet. Tap Edit to add details.</p></div>';
 
     document.getElementById('worldList').style.display = 'none';
     document.getElementById('worldDetail').style.display = 'block';
     document.getElementById('worldEditor').style.display = 'none';
     document.getElementById('worldNewBtn').style.display = 'none';
     document.getElementById('worldFilters').style.display = 'none';
-    document.getElementById('worldTitle').textContent = w.name || 'Place';
+    document.getElementById('worldTitle').textContent = w.name || 'Entry';
 }
 
 function worldNew() {
-    editingWorldId = null; worldPhotoFile = null; worldPhotoPreview = ''; worldSelectedType = '';
-    clearWorldEditor(); showWorldEditorPhoto('', ''); updateWorldTypeBtns();
+    editingWorldId = null; worldSelectedType = '';
+    clearWorldEditor(); updateWorldTypeBtns();
     document.getElementById('worldList').style.display = 'none';
     document.getElementById('worldDetail').style.display = 'none';
     document.getElementById('worldEditor').style.display = 'block';
     document.getElementById('worldNewBtn').style.display = 'none';
     document.getElementById('worldFilters').style.display = 'none';
-    document.getElementById('worldTitle').textContent = 'New Place';
+    document.getElementById('worldTitle').textContent = 'New Entry';
+    document.getElementById('worldEdName').focus();
 }
 
 function worldEdit() {
     const w = worldData.find(x => x.id === editingWorldId);
     if (!w) return;
-    worldPhotoFile = null; worldPhotoPreview = w.photoUrl || ''; worldSelectedType = w.type || '';
+    worldSelectedType = w.type || '';
     document.getElementById('worldEdName').value = w.name || '';
-    document.getElementById('worldEdDescription').value = w.description || '';
-    document.getElementById('worldEdAtmosphere').value = w.atmosphere || '';
-    document.getElementById('worldEdSensory').value = w.sensory || '';
-    document.getElementById('worldEdMemories').value = w.memories || '';
-    document.getElementById('worldEdSeasons').value = w.seasons || '';
-    document.getElementById('worldEdLore').value = w.lore || '';
+    document.getElementById('worldEdOverview').value = w.overview || '';
     worldEditorExtras = (w.extras || []).map(e => ({ ...e }));
-    renderWorldExtras(); updateWorldTypeBtns(); showWorldEditorPhoto(w.photoUrl || '', w.type);
+    renderWorldExtras(); updateWorldTypeBtns();
     document.getElementById('worldDetail').style.display = 'none';
     document.getElementById('worldEditor').style.display = 'block';
     document.getElementById('worldFilters').style.display = 'none';
-    document.getElementById('worldTitle').textContent = 'Edit Place';
+    document.getElementById('worldTitle').textContent = 'Edit Entry';
 }
 
 function clearWorldEditor() {
-    ['worldEdName','worldEdDescription','worldEdAtmosphere','worldEdSensory','worldEdMemories','worldEdSeasons','worldEdLore'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('worldEdName').value = '';
+    document.getElementById('worldEdOverview').value = '';
     worldEditorExtras = []; renderWorldExtras();
-}
-
-function showWorldEditorPhoto(url, type) {
-    const img = document.getElementById('worldEditorPhotoImg');
-    const icon = document.getElementById('worldEditorPhotoIcon');
-    if (url) { img.src = url; img.style.display = 'block'; icon.style.display = 'none'; }
-    else { img.style.display = 'none'; icon.style.display = 'block'; icon.textContent = worldTypeIcons[type] || '\u{1F33F}'; }
 }
 
 function worldCancelEdit() { if (editingWorldId) worldOpen(editingWorldId); else worldShowList(); }
@@ -1835,7 +1825,6 @@ function worldCancelEdit() { if (editingWorldId) worldOpen(editingWorldId); else
 function pickWorldType(type) {
     worldSelectedType = (worldSelectedType === type) ? '' : type;
     updateWorldTypeBtns();
-    if (!worldPhotoPreview) document.getElementById('worldEditorPhotoIcon').textContent = worldTypeIcons[worldSelectedType] || '\u{1F33F}';
 }
 
 function updateWorldTypeBtns() {
@@ -1852,44 +1841,22 @@ function renderWorldExtras() {
     const container = document.getElementById('worldExtras');
     container.innerHTML = worldEditorExtras.map((e, i) =>
         '<div class="persona-extra-item"><div class="persona-extra-item-header">' +
-        '<input class="auth-input persona-extra-label" data-idx="' + i + '" placeholder="Field name..." value="' + escapeHtml(e.label) + '">' +
+        '<input class="auth-input persona-extra-label" data-idx="' + i + '" placeholder="Section title..." value="' + escapeHtml(e.label) + '">' +
         '<button class="affirmation-delete-btn" onclick="worldRemoveExtra(' + i + ')">&times;</button></div>' +
-        '<textarea class="auth-input persona-extra-value" data-idx="' + i + '" placeholder="Write freely..." rows="2">' + escapeHtml(e.value) + '</textarea></div>'
+        '<textarea class="auth-input persona-extra-value" data-idx="' + i + '" placeholder="Write about this topic..." rows="4">' + escapeHtml(e.value) + '</textarea></div>'
     ).join('');
     container.querySelectorAll('.persona-extra-label').forEach(el => { el.addEventListener('input', () => { worldEditorExtras[parseInt(el.dataset.idx)].label = el.value; }); });
     container.querySelectorAll('.persona-extra-value').forEach(el => { el.addEventListener('input', () => { worldEditorExtras[parseInt(el.dataset.idx)].value = el.value; }); });
 }
 
-document.getElementById('worldPhotoUpload').addEventListener('change', (e) => {
-    const file = e.target.files[0]; if (!file) return;
-    if (!file.type.startsWith('image/')) { alert('Please choose an image'); return; }
-    if (file.size > 10 * 1024 * 1024) { alert('Image must be under 10MB'); return; }
-    worldPhotoFile = file;
-    const reader = new FileReader();
-    reader.onload = (ev) => { worldPhotoPreview = ev.target.result; showWorldEditorPhoto(worldPhotoPreview, worldSelectedType); };
-    reader.readAsDataURL(file);
-});
-
 async function worldSave() {
     const name = document.getElementById('worldEdName').value.trim();
-    if (!name) { alert('Give this place a name'); return; }
-    let photoUrl = worldPhotoPreview || '';
-    if (worldPhotoFile) {
-        try {
-            const photoId = editingWorldId || ('world_' + Date.now());
-            const ref = storage.ref('world/' + photoId); await ref.put(worldPhotoFile); photoUrl = await ref.getDownloadURL();
-        } catch (err) { alert('Photo upload failed: ' + err.message); return; }
-    }
+    if (!name) { alert('Give this entry a title'); return; }
     const data = {
         name, type: worldSelectedType,
-        description: document.getElementById('worldEdDescription').value.trim(),
-        atmosphere: document.getElementById('worldEdAtmosphere').value.trim(),
-        sensory: document.getElementById('worldEdSensory').value.trim(),
-        memories: document.getElementById('worldEdMemories').value.trim(),
-        seasons: document.getElementById('worldEdSeasons').value.trim(),
-        lore: document.getElementById('worldEdLore').value.trim(),
+        overview: document.getElementById('worldEdOverview').value.trim(),
         extras: worldEditorExtras.filter(e => e.label.trim() || e.value.trim()),
-        photoUrl, authorId: currentUser.uid, authorName: currentUserName,
+        authorId: currentUser.uid, authorName: currentUserName,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
     if (editingWorldId) { await db.collection('world').doc(editingWorldId).update(data); worldOpen(editingWorldId); }
