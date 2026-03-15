@@ -1904,7 +1904,7 @@ async function worldDelete() {
 
 // ═══════ OUR SPACE — Album-Based Photo Gallery ═══════
 
-const DEFAULT_ALBUMS = ['Us', 'Them', 'World', 'Other'];
+const DEFAULT_ALBUMS = ['Us', 'World', 'Other'];
 let spaceAlbums = [];
 let spacePhotos = [];
 let spaceAlbumsUnsub = null;
